@@ -71,7 +71,7 @@ public class CustomerService {
         return new CustomerDTO(customerRepo.save(customerDTO.toCustomer()));
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "1 0 * * * *")
     @Transactional
     public void dailyCheckout() {
         LocalDate yesterday = getCurrentDate().minusDays(1);
