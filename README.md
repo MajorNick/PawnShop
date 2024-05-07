@@ -9,4 +9,5 @@ focusing on the management of pawned items and borrower transactions. This API e
 - JPA/Hibernate
 - PostgreSQL
 - Mockito
-
+## DB Diagram:
+![alt text](DB_Diagram.png)
