@@ -13,10 +13,11 @@ import javax.persistence.PrimaryKeyJoinColumn;
 @PrimaryKeyJoinColumn(name = "c_id")
 public class Car extends Item {
 
-    @Column(nullable = false)
+    @Column(name = "brand",nullable = false)
     private String brand;
 
-    @Column(nullable = false)
+    @Column(name = "manufacturer_year",nullable = false)
     private long manufactureYear;
+    @Column(name = "mileage")
     private long mileage;
 }

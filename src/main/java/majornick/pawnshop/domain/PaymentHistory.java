@@ -18,8 +18,12 @@ public class PaymentHistory {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "payment_seq")
     private Long id;
 
+    @Column(name = "payment_date")
     private LocalDate paymentDate;
+
+    @Column(name = "amount")
     private double amount;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;

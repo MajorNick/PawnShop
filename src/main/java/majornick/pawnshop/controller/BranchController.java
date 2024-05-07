@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-@RestController
+@RestController()
 @RequestMapping("/branches")
 @RequiredArgsConstructor
 public class BranchController {

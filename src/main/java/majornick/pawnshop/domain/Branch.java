@@ -17,7 +17,8 @@ public class Branch {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "branch_seq")
     private long id;
 
-    @Column(nullable = false)
+
+    @Column(name = "address",nullable = false)
     private String address;
 
     @OneToMany(mappedBy = "branch")

@@ -1,5 +1,6 @@
 package majornick.pawnshop.domain;
 
+
 import lombok.*;
 import majornick.pawnshop.domain.enums.Status;
 
@@ -20,14 +21,20 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "item_seq")
     private long id;
 
+    @Column(name = "pawn_date")
     private LocalDate pawnDate;
 
+    @Column(name = "monthly_fee")
     private double monthlyFee;
 
+    @Column(name = "balance")
     private double balance;
 
+    @Column(name = "remaining_fee")
     private double remainingFee;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private Status status;
 
     @ManyToOne()

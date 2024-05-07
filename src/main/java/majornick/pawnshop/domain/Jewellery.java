@@ -13,6 +13,7 @@ import java.util.List;
 
 public class Jewellery extends Item {
 
+    @Column(name = "description")
     private String description;
 
     @ManyToMany(cascade = CascadeType.ALL)
