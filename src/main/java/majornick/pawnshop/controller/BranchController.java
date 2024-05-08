@@ -58,9 +58,7 @@ public class BranchController {
     public ResponseEntity<?> pawnItem(@PathVariable @Min(1) Long branchId,
                                       @PathVariable @Min(1) Long customerId,
                                       @RequestBody ItemDTO itemDTO) {
-
         return ResponseEntity.status(HttpStatus.CREATED).body(branchService.pawnItem(branchId, customerId, itemDTO));
-
     }
 
 

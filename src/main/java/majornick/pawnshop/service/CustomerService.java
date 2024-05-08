@@ -8,14 +8,14 @@ import majornick.pawnshop.domain.enums.Status;
 import majornick.pawnshop.dto.CustomerDTO;
 import majornick.pawnshop.dto.CustomerPawnedItemDTO;
 import majornick.pawnshop.dto.ItemDTO;
+import majornick.pawnshop.exceptions.CustomerNotFoundException;
+import majornick.pawnshop.exceptions.ItemNotFoundException;
 import majornick.pawnshop.repository.CustomerRepo;
 import majornick.pawnshop.repository.ItemRepo;
 import majornick.pawnshop.repository.PaymentHistoryRepo;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,7 +31,7 @@ public class CustomerService {
     public Customer getCustomer(long id) {
         return customerRepo
                 .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "customer not exists"));
+                .orElseThrow(() -> new CustomerNotFoundException(String.format("customer with id: %d not exists",id)));
     }
 
     public List<CustomerDTO> getAllCustomer() {
@@ -53,6 +53,7 @@ public class CustomerService {
 
     }
 
+    @Transactional
     public CustomerPawnedItemDTO getCustomerPawnedItemsByStatus(long id, Status status) {
         Customer customer = getCustomer(id);
         return CustomerPawnedItemDTO.builder()
@@ -67,6 +68,7 @@ public class CustomerService {
     }
 
 
+    @Transactional
     public CustomerDTO postCustomer(CustomerDTO customerDTO) {
         return new CustomerDTO(customerRepo.save(customerDTO.toCustomer()));
     }
@@ -87,8 +89,8 @@ public class CustomerService {
         }
         makeTransactions(items);
     }
-
-    private void makeTransactions(List<Item> items) {
+    @Transactional
+    public void makeTransactions(List<Item> items) {
 
         items.forEach(item -> {
 
@@ -116,12 +118,12 @@ public class CustomerService {
         });
     }
 
+    @Transactional
     public ItemDTO addFundsOnItem(long itemId, double amount) {
         Item item = itemRepo
                 .findById(itemId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "item not exists"));
+                .orElseThrow(() -> new ItemNotFoundException( String.format("item with id: %d not exists",itemId)));
         item.setBalance(item.getBalance() + amount);
-
         return new ItemDTO(itemRepo.save(item));
     }
 

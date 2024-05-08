@@ -3,6 +3,8 @@ package majornick.pawnshop.service;
 import lombok.RequiredArgsConstructor;
 import majornick.pawnshop.domain.*;
 import majornick.pawnshop.dto.*;
+import majornick.pawnshop.exceptions.BranchNotFoundException;
+import majornick.pawnshop.exceptions.JewelleryComponentNotFoundException;
 import majornick.pawnshop.repository.BranchRepo;
 import majornick.pawnshop.repository.CustomerRepo;
 import majornick.pawnshop.repository.ItemRepo;
@@ -11,6 +13,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -25,40 +28,28 @@ public class BranchService {
     private final JewelleryComponentRepo jewelleryComponentRepo;
 
     public List<BranchDTO> getAll() {
-        return branchRepo
-                .findAll()
-                .stream()
-                .map(BranchDTO::new)
-                .collect(Collectors.toList());
+        return branchRepo.findAll().stream().map(BranchDTO::new).collect(Collectors.toList());
     }
 
 
     public BranchDTO getById(long id) {
-        return new BranchDTO(
-                branchRepo
-                        .findById(id)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "branch not found")));
+        return new BranchDTO(branchRepo.findById(id).orElseThrow(() -> new BranchNotFoundException(String.format("branch with id: %d not found", id))));
     }
 
 
     public JewelleryComponent getJewById(long id) {
-        return jewelleryComponentRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "component not found"));
+        return jewelleryComponentRepo.findById(id).orElseThrow(() -> new JewelleryComponentNotFoundException(String.format("Jewellery component with id: %d not found ", id)));
     }
 
     public BranchDTO postBranch(BranchDTO branchDTO) {
         return BranchDTO.toDto(branchRepo.save(branchDTO.toBranch()));
     }
 
+    @Transactional
     public ItemDTO pawnItem(long branchId, long customerId, ItemDTO itemDTO) {
-        Branch branch = branchRepo
-                .findById(branchId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " branch  not exists"));
+        Branch branch = branchRepo.findById(branchId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " branch  not exists"));
 
-        Customer customer = customerRepo
-                .findById(customerId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " customer  not exists"));
-        /*        itemDTO.setMonthlyFee(itemDTO.getTotalFee() / months);*/
+        Customer customer = customerRepo.findById(customerId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, " customer  not exists"));
 
         ItemDTO responseItemDTO;
         if (itemDTO instanceof CarDTO) {
@@ -76,7 +67,6 @@ public class BranchService {
                 responseItemDTO = JewelleryDTO.giveJewelleryDTO(itemRepo.save(jewellery));
             } else {
                 if (itemDTO instanceof TechnicDTO) {
-
                     Technic technic = ((TechnicDTO) itemDTO).toTechnic();
                     technic.setBranch(branch);
                     technic.setCustomer(customer);
